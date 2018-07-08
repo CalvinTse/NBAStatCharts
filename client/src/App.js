@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import logo from './images/BallLogo.png';
 import './App.css';
 import axios from 'axios'
 import Chart from './components/Chart';
@@ -43,6 +43,9 @@ class App extends Component {
           </label>
           <input type="submit" value="Submit" />
         </form>
+        <div style={{width: '100%', height: '100%'}}>
+          <Chart />
+        </div>
       </div>
     );
   }
