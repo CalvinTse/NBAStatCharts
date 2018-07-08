@@ -1,6 +1,6 @@
 
 const Nightmare = require('nightmare');
-const nightmare = Nightmare({ show: false });
+const nightmare = Nightmare({ show: true });
 var express = require('express');
 var cheerio = require('cheerio');
 var app = express();
@@ -40,11 +40,12 @@ app.get('/', (req, res) => {
    res.send('<h1>Hello World!</h1>');
 })
 
-app.get('/scrapePlayer', async (req, res) => {
+app.get('/scrapePlayer/', async (req, res) => {
+  const player_name = req.query.playername;
   const $ = await nightmare
     .goto('https://www.basketball-reference.com/')
     .wait('input[name="search"]')
-    .type('input[name="search"]', 'Lebron James')
+    .type('input[name="search"]', player_name)
     .click('input[type="submit"]')
     .evaluate(() => {
       return document.querySelector('html').outerHTML
