@@ -1,8 +1,9 @@
 
 const Nightmare = require('nightmare');
-const nightmare = Nightmare({ show: true });
+const nightmare = Nightmare({ show: false });
 var express = require('express');
 var cheerio = require('cheerio');
+var moment = require('moment');
 var app = express();
 
 const STATS = {
@@ -57,8 +58,9 @@ app.get('/scrapePlayer/', async (req, res) => {
       if(err) throw new Error('Could not load html to cheerio');
     });
   const stats = $('table#per_game tbody tr')
+    .filter((index, element) => $(element).find('th').text())
     .map((index, element) => {
-      const season_year = $(element).find('th').text();
+      const season_year = $(element).find('th').text().split("-")[0];
       const ppg = $(element).find('td').eq(STATS.P_PG).text();
       return {
         season: season_year,
@@ -67,7 +69,7 @@ app.get('/scrapePlayer/', async (req, res) => {
     })
     .toArray();
   res.json(JSON.parse(JSON.stringify(stats)));  
-  console.log(`Stats: ${JSON.stringify(stats)}`)  
+  console.log('Stats: ' + JSON.stringify(stats));
 })
 
 app.listen(8081, () => {

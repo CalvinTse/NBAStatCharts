@@ -1,77 +1,99 @@
 import React from 'react'
 import * as d3 from 'd3'
-import {withFauxDOM} from 'react-faux-dom'
+import moment from 'moment'
 
 class Chart extends React.Component {
   componentDidMount () {
-    //var data = [1, [34, 32], [34, 32],[34, 32],[34, 32], [3, 5]];
-    var data = [1,2,3,4,5,6,7,8,9,10];
-    // This will create a faux div and store its virtual DOM in state.chart
-    var faux = this.props.connectFauxDOM('div', 'chart')
+    var data = this.props.player_stats;
+    var start_year = data[0].season;
+    var end_year = data[data.length - 1].season;
+    console.log('Start Year: ' + start_year + ' end Year ' + end_year);
+    var svgDoc = d3
+      .select('.renderedD3')
+      .append('svg')
+      .attr('id', 'year_ppg');
 
-    /*
-       D3 code below by Alan Smith, http://bl.ocks.org/alansmithy/e984477a741bc56db5a5
-       The only changes made for this example are...
-       1) feeding D3 the faux node created above
-       2) calling this.animateFauxDOM(duration) after each animation kickoff
-       3) move data generation and button code to parent component
-       4) data and title provided as props by parent component
-       5) reattach to faux dom for updates
-       6) move rejoining of data and chart updates to updateD3()
-       7) code update for D3 version 4
-    */
+    var WIDTH  = 1000;
+    var HEIGHT = 500;
+    var MARGINS = {
+        top: 20,
+        right: 525,
+        bottom: 20,
+        left: 50
+    }
+    var xScale = d3.scaleTime().range([MARGINS.left, WIDTH - MARGINS.right]).domain([new Date(start_year), new Date(end_year)]);
+    var yScale = d3.scaleLinear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([0,40]);
+    var xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y"));
+    var yAxis = d3.axisLeft(yScale);
+    var formatYear = d3.timeFormat("%Y");
 
-    var xBuffer = 50
-    var yBuffer = 150
-    var lineLength = 400
-
-    var svgDoc = d3.select(faux).append('svg')
-
-    svgDoc
-      .append('text')
-      .attr('x', xBuffer + lineLength / 2)
-      .attr('y', 50)
-      .text(this.props.title)
-
-    // create axis line
-    svgDoc
-      .append('line')
-      .attr('x1', xBuffer)
-      .attr('y1', yBuffer)
-      .attr('x1', xBuffer + lineLength)
-      .attr('y2', yBuffer)
-
-    // create basic circles
     svgDoc
       .append('g')
-      .selectAll('circle')
+      .attr("class","axis")
+      .attr("transform", "translate(0," + (HEIGHT - MARGINS.bottom) + ")")
+      .call(xAxis);
+
+    svgDoc
+      .append('g')
+      .attr("class","axis")
+      .attr("transform", "translate(" + (MARGINS.left) + ",0)")
+      .call(yAxis);
+
+    var lineGen = d3.line()
+      .x(function(d) {
+        return xScale(new Date(d.season));
+      })
+      .y(function(d) {
+        return yScale(d.pts)
+      })
+      .curve(d3.curveLinear);
+    var tip = d3.select(".renderedD3").append("div")	
+      .attr("class", "tooltip")				
+      .style("opacity", 0);
+    svgDoc
+      .append('path')
+      .attr('class', 'data_plot')
+      .attr('d', lineGen(data))
+      .attr('stroke', 'black')
+      .attr('stroke-width', 2)
+      .attr('fill', 'none');
+
+    svgDoc
+      .selectAll("dot")
       .data(data)
-      .enter()
-      .append('circle')
-      .attr('cx', function (d, i) {
-        var spacing = lineLength / data.length
-        return xBuffer + i * spacing
+      .enter().append("circle")
+      .attr("r", 3.5)
+      .attr("cx", function(d) { 
+        return xScale(new Date(d.season)); 
       })
-      .attr('cy', yBuffer)
-      .attr('r', function (d, i) {
-        return d
+      .attr("cy", function(d) { 
+        return yScale(d.pts); 
       })
+      .on("mouseover", function(d) {		
+        tip.transition()		
+            .duration(200)		
+            .style("opacity", .9);
+        const display_year = formatYear(moment(d.season, 'YYYY').add(1, 'days').toDate());  		
+        tip.html( `<u>Season</u>: ${display_year}<br/><u>PPG</u>: ${d.pts}`)	
+            .style("left", d3.event.pageX + "px")		
+            .style("top", d3.event.pageY + "px");	
+        })					
+    .on("mouseout", function(d) {		
+      tip.transition()		
+          .duration(500)		
+          .style("opacity", 0);	
+        });
   }
 
   render () {
     return (
       <div>
-        <h2>Here is some fancy data:</h2>
+        <h2>Here is the points per game:</h2>
         <div className='renderedD3'>
-          {this.props.chart}
         </div>
       </div>
     )
   }
 }
 
-Chart.defaultProps = {
-  chart: 'loading...'
-}
-
-export default withFauxDOM(Chart)
+export default Chart

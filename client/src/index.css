@@ -7,7 +7,11 @@ body {
 svg {
   width: 500px; 
   height: 500px;
+  border-radius: 25px;
+  align: center;
+  border: 2px solid black;
 }
+
 button {
   float: left;
 }
@@ -15,24 +19,47 @@ line {
   stroke: #ddd;
   shape-rendering: crispEdges;
 }
+
 text {
   text-anchor: middle;
 }
+
 circle {
-  fill: orange;
-  stroke: orange;
+  fill: black;
+  stroke: black;
   fill-opacity: 0.5;
 }
+
 .axis line {
   fill: none;
   stroke: #ddd;
   shape-rendering: crispEdges;
 }
+
 .axis path  {
   fill: none;
+  stroke-width: 1.5;
 }
+
 .axis text {
-  font-size: 0.7em;
+  font-size: 1em;
   fill: #555;
   font-family: sans-serif;
+}
+
+.tick line {
+  stroke-width: 1.2;
+}
+
+div.tooltip {
+  position: absolute;
+  text-align: left; 
+  width: 80px;
+  height: 28px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: lightsteelblue;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
 }
