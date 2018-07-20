@@ -42,6 +42,7 @@ const STATS = {
 };
 
 app.get('/', async (req, res) => {
+    const player_name = 'LeBron James';
     const file = './csv/players_search_list.csv'
     var content = Fs.readFileSync(file, { encoding: 'binary' });
     const results = 
@@ -49,13 +50,33 @@ app.get('/', async (req, res) => {
             complete: function(results) {
                 return results;
             }
-        })
-    console.log('Results: ' + JSON.stringify(results.data));
+        });
+    //console.log('Results: ' + results.data[2222]);
+    console.log('Results: ' + binary_search_players(results.data, player_name));
     res.send('<h1>Hello World!</h1>');
 })
 
+function binary_search_players(player_list, player_name) {
+    var low_index = 0;
+    var high_index = player_list.length - 2;
+    var mid_index;
+    while(low_index <= high_index) {
+      mid_index = parseInt((low_index + high_index) / 2);
+        if (player_list[mid_index][1] > player_name) {
+            high_index = mid_index - 1;
+        } else if (player_list[mid_index][1] < player_name) {
+            low_index = mid_index + 1;
+        } else {
+            return player_list[mid_index][0];
+        }   
+    }
+    //return players close to it
+    return null;
+}
+
 app.get('/scrapePlayer/', async (req, res) => {
   const player_name = req.query.playername;
+  console.log(player_name);
   const $ = await nightmare
     .goto('https://www.basketball-reference.com/')
     .wait('input[name="search"]')
