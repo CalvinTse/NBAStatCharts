@@ -13,6 +13,12 @@ const DATA_STATUS = {
   AVALIABLE:3
 };
 
+const STAT_TYPE_BAR_GRAPH = {
+  FIELD_GOALS: 1,
+  THREE_POINT:2,
+  FREE_THROWS:3
+};
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -50,10 +56,12 @@ class App extends Component {
 
   render() {
     var data_to_display;
-    var bargraph;
+    var fg_bargraph;
+    var three_bargraph;
+    var ft_bargraph;
     var player_name;
     var player_pic;
-    
+
     switch (this.state.show_charts) {
       case DATA_STATUS.NONE:
         data_to_display = <h3>Player Stats could not be found</h3>;
@@ -65,7 +73,9 @@ class App extends Component {
         player_pic = <img src={this.state.player_stats.img_url} className="player_pic" alt={this.state.player_stats.name}/>;
         player_name = <h2>Displaying stats for {this.state.player_stats.name}</h2>;
         data_to_display = <LineChart player_stats={this.state.player_stats}/>;
-        bargraph = <BarGraph player_stats={this.state.player_stats}/>;
+        fg_bargraph = <BarGraph player_stats={this.state.player_stats} stat_type={STAT_TYPE_BAR_GRAPH.FIELD_GOALS}/>;
+        three_bargraph = <BarGraph player_stats={this.state.player_stats} stat_type={STAT_TYPE_BAR_GRAPH.THREE_POINT}/>;
+        ft_bargraph = <BarGraph player_stats={this.state.player_stats} stat_type={STAT_TYPE_BAR_GRAPH.FREE_THROWS}/>;
         break;
       default:
         data_to_display = <h3>Player Stats could not be found</h3>;
@@ -88,12 +98,18 @@ class App extends Component {
         <div id = 'player_name'>
          {player_name}
         </div>
-        <div id = 'player_pic'>
-         {player_pic}
-        </div>
-        <div className = 'stats_chart'>
-          {data_to_display}
-          {bargraph}
+        <div id = 'top_container'>
+          <div id = 'player_pic'>
+          {player_pic}
+          </div>
+          <div className = 'basicStats'>
+            {data_to_display}
+          </div>
+        </div>  
+        <div className = 'bargraph_stats'>
+          {fg_bargraph}
+          {three_bargraph}
+          {ft_bargraph}
         </div>
       </div>
     );

@@ -8,6 +8,11 @@ class LineChart extends Component{
 
   set_chart_options() {
     return {
+      title: {
+        display: true,
+        text: 'Custom Chart Title'
+      },
+      maintainAspectRatio: true,
       scales: {
         xAxes: [{
           scaleLabel: {

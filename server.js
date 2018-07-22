@@ -195,14 +195,17 @@ app.get('/scrapePlayer/', async (req, res) => {
   );
   //NOTE:league average start from most recent vs player stats start from least recent
   const league_averages = await update_with_league_avg(player_stats.stats);
-  player_stats.stats.map((stat, index) => {
-    var season_index = league_averages.length - (index + 1);
+  var season_index = league_averages.length - 1;
+  await Promise.each(player_stats.stats, (stat, index) => {
     stat.field_goals.league_average = league_averages[season_index].field_goal_percent;
     stat.three_point.league_average = league_averages[season_index].three_percent;
     stat.free_throw.league_average = league_averages[season_index].free_throw_percent;
-    return stat;
-  });
-  
+    if (player_stats.stats.length - 1 > index) {
+      if (league_averages[season_index].season !== player_stats.stats[index + 1].season) season_index--;
+    }
+    return season_index;
+  })
+
   res.json(JSON.parse(JSON.stringify(player_stats)));  
 })
 

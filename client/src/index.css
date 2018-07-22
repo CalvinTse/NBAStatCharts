@@ -4,13 +4,30 @@ body {
   font-family: sans-serif;
 }
 
-.lineChart {
-  width: 40%;
-  float:left;
+#top_container {
+  width: 100%;
+  /* background-color: grey; */
+  margin: 15px auto;
+  position: relative;
+  padding-bottom: 25.30%;
+}
+#top_container #player_pic img{
+  float: left;
+  margin-left: 2%;
+  margin-right: 2%;
+  border: 2px solid black;
+}
+
+#top_container .lineChart {
+  width: 50%;
+  float: left;
+  border: 2px solid black;
 }
 
 .barGraph {
   width: 55%;
+  margin-left: 2%;
+  margin-bottom: 15px;
   float:left;
   border: 2px solid black;
 }
