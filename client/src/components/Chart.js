@@ -21,7 +21,7 @@ class Chart extends React.Component {
         bottom: 20,
         left: 50
     }
-    var xScale = d3.scaleTime().range([MARGINS.left, WIDTH - MARGINS.right]).domain([new Date(start_year), new Date(end_year)]);
+    var xScale = d3.scaleTime().range([MARGINS.left, WIDTH - MARGINS.right]).domain([moment(start_year, 'YYYY').add(1, 'days').toDate(), moment(end_year, 'YYYY').add(1, 'days').toDate()]);
     var yScale = d3.scaleLinear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([0,40]);
     var xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%Y"));
     var yAxis = d3.axisLeft(yScale);
@@ -41,7 +41,7 @@ class Chart extends React.Component {
 
     var lineGen = d3.line()
       .x(function(d) {
-        return xScale(new Date(d.season));
+        return xScale(moment(d.season, 'YYYY').add(1, 'days').toDate());
       })
       .y(function(d) {
         return yScale(d.pts)
@@ -64,7 +64,7 @@ class Chart extends React.Component {
       .enter().append("circle")
       .attr("r", 3.5)
       .attr("cx", function(d) { 
-        return xScale(new Date(d.season)); 
+        return xScale(moment(d.season, 'YYYY').add(1, 'days').toDate()); 
       })
       .attr("cy", function(d) { 
         return yScale(d.pts); 

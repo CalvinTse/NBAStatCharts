@@ -4,6 +4,8 @@ import loading from './images/loading.gif';
 import './App.css';
 import axios from 'axios'
 import Chart from './components/Chart';
+import LineChart from './components/LineChart';
+import BarGraph from './components/BarGraph';
 
 const DATA_STATUS = {
   NONE: 1,
@@ -33,7 +35,7 @@ class App extends Component {
     await axios.get(`/scrapePlayer?playername=${player_name}`)
       .then(response => {
         const stat_data = response.data;
-        if(stat_data.length > 0) {
+        if(stat_data.stats.length > 0) {
           this.setState({show_charts: DATA_STATUS.AVALIABLE, player_stats: stat_data});
         } else {
           this.setState({show_charts: DATA_STATUS.NONE});
@@ -48,6 +50,10 @@ class App extends Component {
 
   render() {
     var data_to_display;
+    var bargraph;
+    var player_name;
+    var player_pic;
+    
     switch (this.state.show_charts) {
       case DATA_STATUS.NONE:
         data_to_display = <h3>Player Stats could not be found</h3>;
@@ -56,7 +62,10 @@ class App extends Component {
         data_to_display = <img src={loading} className="loading" alt="loading"/>;
         break;
       case DATA_STATUS.AVALIABLE: 
-        data_to_display = <Chart player_stats={this.state.player_stats}/>;;
+        player_pic = <img src={this.state.player_stats.img_url} className="player_pic" alt={this.state.player_stats.name}/>;
+        player_name = <h2>Displaying stats for {this.state.player_stats.name}</h2>;
+        data_to_display = <LineChart player_stats={this.state.player_stats}/>;
+        bargraph = <BarGraph player_stats={this.state.player_stats}/>;
         break;
       default:
         data_to_display = <h3>Player Stats could not be found</h3>;
@@ -76,8 +85,15 @@ class App extends Component {
           </label>
           <input type="submit" value="Submit" />
         </form>
-        <div className = 'ppg_chart'>
+        <div id = 'player_name'>
+         {player_name}
+        </div>
+        <div id = 'player_pic'>
+         {player_pic}
+        </div>
+        <div className = 'stats_chart'>
           {data_to_display}
+          {bargraph}
         </div>
       </div>
     );
